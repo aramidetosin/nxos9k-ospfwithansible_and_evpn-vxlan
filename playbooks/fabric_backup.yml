@@ -1,0 +1,22 @@
+---
+- name: FABRIC BUILD
+  hosts: all
+  gather_facts: no
+  tags: fetch
+
+  vars:
+    nxos_ssh:
+      host: "{{ ansible_host }}"
+      username: "{{ user }}"
+      password: "{{ pw }}"
+      transport: cli
+
+  tasks:
+    - name: get nxos facts via ssh
+      nxos_facts:
+        provider: "{{ nxos_ssh }}"
+        gather_subset:
+          - config
+
+    - name: save running-config to file
+      local_action: copy content={{ ansible_net_config }} dest="/home/neteng/ansible/backup/{{ inventory_hostname }}.cfg"
