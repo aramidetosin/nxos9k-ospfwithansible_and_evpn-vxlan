@@ -12,6 +12,12 @@
       transport: cli
 
   tasks:
+    - name: ensure lldp is enabled
+      nxos_feature:
+        feature: lldp
+        state: enabled
+        provider: "{{ nxos_ssh }}"
+
     - name: get nxos facts via ssh
       nxos_facts:
         provider: "{{ nxos_ssh }}"
