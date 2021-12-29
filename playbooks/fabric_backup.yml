@@ -20,3 +20,26 @@
 
     - name: save running-config to file
       local_action: copy content={{ ansible_net_config }} dest="/home/neteng/ansible/backup/{{ inventory_hostname }}.cfg"
+
+- name: COMMIT CONFIGURATION CHANGES TO GIT
+  hosts: localhost
+  connection: local
+  tags: git
+
+  tasks:
+    - name: remove commented lines with timestamps
+      # Cisco/NXOS specific - avoid command timestamp from always marking config as changed
+      shell: |
+        sed -i -e '/^!Time/d' /home/neteng/ansible/backup/*.cfg
+      args:
+        warn: no
+
+    - name: commit changes to git
+      shell: |
+        git add .
+        git commit -m "Config snapshot taken $(date +"%Y-%m-%d %H:%M:%S")"
+        # Needed as git commit will fail if there are no changed files
+        exit 0
+        git push
+      args:
+        chdir: "/home/neteng/ansible"
