@@ -12,6 +12,17 @@
       transport: cli
 
   tasks:
+    - name: configure hostname and domain-name
+      nxos_system:
+        provider: "{{ nxos_ssh }}"
+        hostname: "{{ inventory_hostname }}"
+        domain_name: homelab.local
+
+    - name: ensure nxapi is enabled
+      nxos_feature:
+        feature: nxapi
+        state: enabled
+        provider: "{{ nxos_ssh }}"
     - name: ensure lldp is enabled
       nxos_feature:
         feature: lldp
